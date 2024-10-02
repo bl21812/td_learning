@@ -7,6 +7,7 @@ import time
 import warnings
 from RL_brainsample_wrong import rlalgorithm as rlalg1 
 from RL_brainsample_sarsa import rlalgorithm as rlalg2
+from RL_brainsample_qlearning import rlalgorithm as rlalg3
 
 DEBUG=1
 def debug(debuglevel, msg, **kwargs):
@@ -210,7 +211,6 @@ if __name__ == "__main__":
     experiments=[]
     
     name1 = "WrongAlg on Task " + str(usetask)
-
     env1 = Maze(agentXY,goalXY,wall_shape, pits, name1)
     RL1 = rlalg1(actions=list(range(env1.n_actions)))
     data1={}
@@ -227,6 +227,7 @@ if __name__ == "__main__":
     #env2.mainloop()
     #experiments.append((name2,env2,RL2, data2))
 
+    # SARSA
     name2 = "SARSA on Task " + str(usetask)
     env2 = Maze(agentXY,goalXY,wall_shape,pits, name2)
     RL2 = rlalg2(actions=list(range(env2.n_actions)))
@@ -234,6 +235,15 @@ if __name__ == "__main__":
     env2.after(10, update(env2, RL2, data2, episodes, window))
     env2.mainloop()
     experiments.append((name2, env2, RL2, data2))
+
+    # Q-Learning
+    name3 = "Q-Learning on Task " + str(usetask)
+    env3 = Maze(agentXY,goalXY,wall_shape,pits, name3)
+    RL3 = rlalg3(actions=list(range(env3.n_actions)))
+    data3={}
+    env3.after(10, update(env3, RL3, data3, episodes, window))
+    env3.mainloop()
+    experiments.append((name3, env3, RL3, data3))
 
 
     print("All experiments complete")

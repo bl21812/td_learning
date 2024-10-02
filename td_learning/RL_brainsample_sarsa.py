@@ -4,6 +4,7 @@ import pandas as pd
 
 
 class rlalgorithm:
+    
     # TODO: what should default values of alpha and gamma be ??
     def __init__(self, actions, epsilon=0.1, alpha=0.1, gamma=0.1, *args, **kwargs):
         self.epsilon = epsilon
