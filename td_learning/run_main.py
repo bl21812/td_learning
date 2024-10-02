@@ -7,7 +7,7 @@ import time
 import warnings
 from RL_brainsample_wrong import rlalgorithm as rlalg1 
 
-DEBUG=1
+DEBUG=2
 def debug(debuglevel, msg, **kwargs):
     if debuglevel <= DEBUG:
         if 'printNow' in kwargs:
