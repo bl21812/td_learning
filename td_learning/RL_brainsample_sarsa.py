@@ -38,6 +38,7 @@ class rlalgorithm:
         if s_ == 'terminal':
             # we can skip choosing an action - since the episode will terminate
                 # and a_ is only needed for Q[s_][a_], which for terminal s_ should always be 0
+            a_ = None
             # update value function
             self.Q[s][a] += self.alpha * (r - self.Q[s][a])
 
@@ -46,6 +47,8 @@ class rlalgorithm:
             a_ = self.choose_action(s_)
             # update value function
             self.Q[s][a] += self.alpha * (r + (self.gamma * self.Q[s_][a_]) - self.Q[s][a])
+
+        return s_, a_
 
     # just taken from his sample code
     def check_state_exist(self, state):

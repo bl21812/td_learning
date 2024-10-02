@@ -6,8 +6,9 @@ import pickle
 import time
 import warnings
 from RL_brainsample_wrong import rlalgorithm as rlalg1 
+from RL_brainsample_sarsa import rlalgorithm as rlalg2
 
-DEBUG=2
+DEBUG=1
 def debug(debuglevel, msg, **kwargs):
     if debuglevel <= DEBUG:
         if 'printNow' in kwargs:
@@ -224,7 +225,15 @@ if __name__ == "__main__":
     #data2={}
     #env2.after(10, update(env2, RL2, data2, episodes, window))
     #env2.mainloop()
-    #experiments.append((env2,RL2, data2))
+    #experiments.append((name2,env2,RL2, data2))
+
+    name2 = "SARSA on Task " + str(usetask)
+    env2 = Maze(agentXY,goalXY,wall_shape,pits, name2)
+    RL2 = rlalg2(actions=list(range(env2.n_actions)))
+    data2={}
+    env2.after(10, update(env2, RL2, data2, episodes, window))
+    env2.mainloop()
+    experiments.append((name2, env2, RL2, data2))
 
 
     print("All experiments complete")
