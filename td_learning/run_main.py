@@ -8,6 +8,8 @@ import warnings
 from RL_brainsample_wrong import rlalgorithm as rlalg1 
 from RL_brainsample_sarsa import rlalgorithm as rlalg2
 from RL_brainsample_qlearning import rlalgorithm as rlalg3
+from RL_brainsample_expsarsa import rlalgorithm as rlalg4
+from RL_brainsample_doubqlearning import rlalgorithm as rlalg5
 
 DEBUG=1
 def debug(debuglevel, msg, **kwargs):
@@ -142,17 +144,17 @@ def update(env, RL, data, episodes=50, window=100, **kwargs):
 if __name__ == "__main__":
     warnings.filterwarnings("ignore", message="The frame\.append method is deprecated.*")
     #sim_speed of .1 is nice to view, .001 is fast but visible, sim_speed has not effect if showRender is False
-    sim_speed = 0.1 #.001
+    sim_speed = 0.001 #.001
 
     #Which task to run, select just one
     usetask = 1 # 1,2,3
 
     #Example Short Fast start parameters for Debugging
-    showRender=True # True means renderEveryNth episode only, False means don't render at all
-    episodes=10 #100, 500, 1000
-    renderEveryNth=10 #10, 100, 250 
-    printEveryNth=1 #10, 25, 100
-    window=3 #10, 25
+    showRender=False # True means renderEveryNth episode only, False means don't render at all
+    episodes=2000 #100, 500, 1000
+    renderEveryNth=10000 #10, 100, 250 
+    printEveryNth=100 #10, 25, 100
+    window=250 #10, 25
     do_plot_rewards=True
     do_plot_length=True
 
@@ -210,13 +212,13 @@ if __name__ == "__main__":
     # You can add a new entry for each experiment in the experiments list and then they will all plot side-by-side at the end.
     experiments=[]
     
-    name1 = "WrongAlg on Task " + str(usetask)
+    '''name1 = "WrongAlg on Task " + str(usetask)
     env1 = Maze(agentXY,goalXY,wall_shape, pits, name1)
     RL1 = rlalg1(actions=list(range(env1.n_actions)))
     data1={}
     env1.after(10, update(env1, RL1, data1, episodes, window))
     env1.mainloop()
-    experiments.append((name1, env1,RL1, data1))
+    experiments.append((name1, env1,RL1, data1))'''
 
     #Create another RL_brain_ALGNAME.py class and import it as rlag2 then run it here.
     #name2 = "ALGNAME on Task " + str(usetask)
@@ -244,6 +246,24 @@ if __name__ == "__main__":
     env3.after(10, update(env3, RL3, data3, episodes, window))
     env3.mainloop()
     experiments.append((name3, env3, RL3, data3))
+
+    # Expected SARSA
+    name4 = "Expected SARSA on Task " + str(usetask)
+    env4 = Maze(agentXY,goalXY,wall_shape,pits, name4)
+    RL4 = rlalg4(actions=list(range(env4.n_actions)))
+    data4={}
+    env4.after(10, update(env4, RL4, data4, episodes, window))
+    env4.mainloop()
+    experiments.append((name4, env4, RL4, data4))
+
+    # Double Q-Learning
+    name5 = "Double Q-Learning on Task " + str(usetask)
+    env5 = Maze(agentXY,goalXY,wall_shape,pits, name5)
+    RL5 = rlalg5(actions=list(range(env5.n_actions)))
+    data5={}
+    env5.after(10, update(env5, RL5, data5, episodes, window))
+    env5.mainloop()
+    experiments.append((name5, env5, RL5, data5))
 
 
     print("All experiments complete")
@@ -276,5 +296,6 @@ if __name__ == "__main__":
         plt.figure(2)
         plt.suptitle("Task " + str(usetask), fontsize=20)
         plt.show()
-        
 
+    # TODO: METRICS / MEASUREMENTS TO ADD:
+        # runtime, 'bad' moves (pit, wall, edge), repeated visits to spaces? (on any single path)

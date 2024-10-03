@@ -4,9 +4,9 @@ import pandas as pd
 
 
 class rlalgorithm:
-    
+
     # TODO: what should default values of alpha and gamma be ??
-    def __init__(self, actions, epsilon=0.1, alpha=0.1, gamma=0.1, *args, **kwargs):
+    def __init__(self, actions, epsilon=0.1, alpha=0.1, gamma=0.9, *args, **kwargs):
         self.epsilon = epsilon
         self.alpha = alpha
         self.gamma = gamma
@@ -40,7 +40,7 @@ class rlalgorithm:
             # we can skip choosing an action - since the episode will terminate
                 # and a_ is only needed for Q[s_][a_], which for terminal s_ should always be 0
             a_ = None
-            # update value function
+            # update value function (note that all Q values for terminal states = 0)
             self.Q[s][a] += self.alpha * (r - self.Q[s][a])
 
         else:

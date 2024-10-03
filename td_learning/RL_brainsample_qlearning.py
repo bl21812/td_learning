@@ -6,7 +6,7 @@ import pandas as pd
 class rlalgorithm:
 
     # TODO: what should default values of alpha and gamma be ??
-    def __init__(self, actions, epsilon=0.1, alpha=0.1, gamma=0.1, *args, **kwargs):
+    def __init__(self, actions, epsilon=0.1, alpha=0.1, gamma=0.9, *args, **kwargs):
         self.epsilon = epsilon
         self.alpha = alpha
         self.gamma = gamma
@@ -43,7 +43,7 @@ class rlalgorithm:
             self.Q[s][a] += self.alpha * (r - self.Q[s][a])
         else:
             # update value function
-            self.Q[s][a] += self.alpha * (r + (self.gamma * self.Q[s_][np.argmax(self.Q[s_])])- self.Q[s][a])
+            self.Q[s][a] += self.alpha * (r + (self.gamma * self.Q[s_][np.argmax(self.Q[s_])]) - self.Q[s][a])
 
         # choose next action with policy
         a_ = self.choose_action(s_)
