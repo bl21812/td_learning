@@ -14,6 +14,7 @@ class rlalgorithm:
         self.Q2={}
         self.actions=actions
         self.num_actions = len(actions)
+        print(f'Init new {self.display_name} Algorithm: eps={epsilon} alpha={alpha} gamma={gamma}')
 
     def choose_action(self, observation, **kwargs):
 

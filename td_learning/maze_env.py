@@ -16,7 +16,7 @@ origin = np.array([UNIT/2, UNIT/2])
 
 
 class Maze(tk.Tk, object):
-    def __init__(self, agentXY, goalXY, walls=[],pits=[], showRender=True, name=''):
+    def __init__(self, agentXY, goalXY, walls=[],pits=[], name='', showRender=True):
         super(Maze, self).__init__()
         self.action_space = ['u', 'd', 'l', 'r']
         self.n_actions = len(self.action_space)
@@ -31,6 +31,7 @@ class Maze(tk.Tk, object):
         self.title('maze {}'.format(name))
         self.geometry('{0}x{1}'.format(MAZE_H * UNIT, MAZE_W * UNIT))
         self.build_shape_maze(agentXY, goalXY, walls, pits)
+        print(f"Init Maze with agent at {agentXY} and goal at {goalXY}, showRender={showRender}")
 
 
     def build_shape_maze(self,agentXY,goalXY, walls,pits):
