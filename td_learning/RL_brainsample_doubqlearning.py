@@ -1,6 +1,8 @@
 import logging
 import numpy as np
 
+logger = logging.getLogger('ECE750')
+
 
 class rlalgorithm:
     
@@ -14,7 +16,7 @@ class rlalgorithm:
         self.Q2={}
         self.actions=actions
         self.num_actions = len(actions)
-        logging.info(f'Init new {self.display_name} Algorithm: eps={epsilon} alpha={alpha} gamma={gamma}')
+        logger.info(f'Init new {self.display_name} Algorithm: eps={epsilon} alpha={alpha} gamma={gamma}')
 
     def choose_action(self, observation, **kwargs):
 
@@ -47,6 +49,7 @@ class rlalgorithm:
 
         # TODO: im not sure how s_ can be a string, i thought it was coords ...
         if s_ == 'terminal':
+            logger.warning("Terminal state reached")
             # value functions for terminal states should always remain 0
                 # so the max across all actions for a terminal state should also remain 0
             q_update[s][a] += self.alpha * (r - q_update[s][a])

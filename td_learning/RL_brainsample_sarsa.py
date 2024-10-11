@@ -1,6 +1,8 @@
 import logging
 import numpy as np
 
+logger = logging.getLogger('ECE750')
+
 
 class rlalgorithm:
 
@@ -13,7 +15,7 @@ class rlalgorithm:
         self.Q={}
         self.actions=actions
         self.num_actions = len(actions)
-        logging.info(f'Init new {self.display_name} Algorithm: eps={epsilon} alpha={alpha} gamma={gamma}')
+        logger.info(f'Init new {self.display_name} Algorithm: eps={epsilon} alpha={alpha} gamma={gamma}')
 
     # mostly same as sample code (except his epsilon check was weird?)
     def choose_action(self, observation, **kwargs):
@@ -37,6 +39,7 @@ class rlalgorithm:
 
         # TODO: im not sure how s_ can be a string, i thought it was coords ...
         if s_ == 'terminal':
+            logger.warning("Terminal state reached")
             # we can skip choosing an action - since the episode will terminate
                 # and a_ is only needed for Q[s_][a_], which for terminal s_ should always be 0
             a_ = None

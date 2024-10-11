@@ -1,14 +1,14 @@
-import random
-
-import numpy as np
 import time
 import sys
+import logging
+
+import numpy as np
 if sys.version_info.major == 2:
     import Tkinter as tk
 else:
     import tkinter as tk
 
-
+logger = logging.getLogger('ECE750')
 UNIT = 40   # pixels per cell (width and height)
 MAZE_H = 10  # height of the entire grid in cells
 MAZE_W = 10  # width of the entire grid in cells
@@ -31,7 +31,7 @@ class Maze(tk.Tk, object):
         self.title('maze {}'.format(name))
         self.geometry('{0}x{1}'.format(MAZE_H * UNIT, MAZE_W * UNIT))
         self.build_shape_maze(agentXY, goalXY, walls, pits)
-        print(f"Init Maze with agent at {agentXY} and goal at {goalXY}, showRender={showRender}")
+        logger.info(f"Init Maze with agent at {agentXY} and goal at {goalXY}, showRender={showRender}")
 
 
     def build_shape_maze(self,agentXY,goalXY, walls,pits):

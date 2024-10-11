@@ -1,6 +1,8 @@
 import logging
 import numpy as np
 
+logger = logging.getLogger('ECE750')
+
 
 class rlalgorithm:
 
@@ -13,7 +15,7 @@ class rlalgorithm:
         self.Q={}
         self.actions=actions
         self.num_actions = len(actions)
-        logging.info(f'Init new {self.display_name} Algorithm: eps={epsilon} alpha={alpha} gamma={gamma}')
+        logger.info(f'Init new {self.display_name} Algorithm: eps={epsilon} alpha={alpha} gamma={gamma}')
 
     # mostly same as sample code (except his epsilon check was weird?)
     def choose_action(self, observation, **kwargs):
@@ -37,6 +39,7 @@ class rlalgorithm:
         a_ = None
 
         if s_ == 'terminal':
+            logger.warning("Terminal state reached")
             # we can skip choosing an action - since the episode will terminate
             a_ = None
             # update value function (note that all Q values for terminal states = 0)
@@ -44,8 +47,16 @@ class rlalgorithm:
         else:
             a_ = self.choose_action(s_)
 
-            p_a = np.ones(self.num_actions) * (1 / (self.num_actions - 1))
-            p_a[self.actions[np.argmax(self.Q[s_])]] = (1.0 - self.epsilon)
+            # p_a_0 = np.ones(self.num_actions) * (1 / (self.num_actions - 1))
+            # p_a_0 [self.actions[np.argmax(self.Q[s_])]] = (1.0 - self.epsilon)
+
+            p_a_1 = np.ones(self.num_actions) * (self.epsilon / self.num_actions)
+            p_a_1[self.actions[np.argmax(self.Q[s_])]] += (1.0 - self.epsilon)
+
+            # logger.debug(f"sum of p_a_0 {p_a_0.sum()}")
+            logger.debug(f"sum of p_a_1 {p_a_1.sum()}")
+            
+            p_a = p_a_1
             q_expected = self.Q[s_] @ p_a
 
             self.Q[s][a] += self.alpha * (r + (self.gamma * q_expected) - self.Q[s][a])
