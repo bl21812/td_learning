@@ -1,15 +1,24 @@
-from maze_env import Maze
-import numpy as np
+import os
 import sys
-import matplotlib.pyplot as plt
 import pickle
-import time
 import warnings
+import logging
+
+from datetime import datetime
+from pathlib import Path
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+from maze_env import Maze
+from plot_utils import plot_rewards, plot_length
+
 from RL_brainsample_wrong import rlalgorithm as WrongAlgo 
 from RL_brainsample_sarsa import rlalgorithm as SARSAAlgo
 from RL_brainsample_qlearning import rlalgorithm as QLearningAlgo
 from RL_brainsample_expsarsa import rlalgorithm as ExpectedSARSAAlgo
 from RL_brainsample_doubqlearning import rlalgorithm as DoubleQLearningAlgo
+
 
 DEBUG = 1
 
@@ -28,7 +37,8 @@ SIM_SPEED = 0.001 #.001
 USE_TASK = 1 # 1,2,3
 
 #Example Short Fast start parameters for Debugging
-EPISODES = 2000 #100, 500, 1000
+# EPISODES = 2000 #100, 500, 1000
+EPISODES = 10 #100, 500, 1000
 RENDER_EVERY_NTH = 10000 #10, 100, 250 
 PRINT_EVERY_NTH = 100 #10, 25, 100
 WINDOW = 250 #10, 25
@@ -39,11 +49,33 @@ DO_PLOT_LENGTH=True
 # True means RENDER_EVERY_NTH episode only, False means don't render at all
 SHOW_RENDER = False 
 
+
 HYPERPARAM_KWARGS = dict(
     epsilon = 0.1,
     alpha = 0.1,
     gamma = 0.9
 )
+
+# TODO(howird): yea this is insane and should be removed, im just tired and want it to run
+if __name__ == "__main__" and len(sys.argv) > 1:
+    USE_TASK = int(sys.argv[1])
+    if len(sys.argv) > 2:
+        HYPERPARAM_KWARGS["alpha"] = float(sys.argv[2])
+
+
+CURR_DATETIME = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+RUNS_DIR = Path("./runs")
+OUT_DIR = RUNS_DIR / f"{CURR_DATETIME}"
+OUT_DIR.mkdir(parents=True, exist_ok=True)
+
+log_file = OUT_DIR / f"experiment.log.txt"
+
+logging.basicConfig(level=logging.INFO, 
+                    format='%(asctime)s - %(levelname)s - %(message)s', 
+                    handlers=[logging.FileHandler(log_file), logging.StreamHandler()])
+
+logging.info(f"Number of Episodes: {EPISODES}, Render Every Nth: {RENDER_EVERY_NTH}, Print Every Nth: {PRINT_EVERY_NTH}, Window: {WINDOW}")
+logging.info(f"Algorithm Hyperparameters: {HYPERPARAM_KWARGS}")
 
 # Example Full Run, you may need to run longer
 #SHOW_RENDER=False
@@ -53,52 +85,6 @@ HYPERPARAM_KWARGS = dict(
 #WINDOW=100
 #DO_PLOT_REWARDS=True
 #DO_PLOT_LENGTH=True
-
-def plot_rewards(experiments):
-    """Generate plot of rewards for given experiments list and window controls the length
-    of the window of previous episodes to use for average reward calculations.
-    """
-    plt.figure(2)
-    plt.subplot(121)
-    window_color_list=['blue','red','green','black','purple']
-    color_list=['lightblue','lightcoral','lightgreen', 'darkgrey', 'magenta']
-    label_list=[]
-    for i, (name, env, RL, data) in enumerate(experiments):
-        x_values=range(len(data['global_reward']))
-        label_list.append(RL.display_name)
-        y_values=data['global_reward']
-        plt.plot(x_values, y_values, c=color_list[i],label=label_list[-1])
-        plt.legend(label_list)
-    if len(x_values) >= WINDOW : 
-        for i, (name, env, RL, data) in enumerate(experiments):
-            x_values=range(WINDOW, 
-                    len(data['med_rew_window'])+WINDOW)
-            y_values=data['med_rew_window']
-            plt.plot(x_values, y_values,
-                    c=window_color_list[i])
-    plt.title("Summed Reward", fontsize=16)
-    plt.xlabel("Episode", fontsize=16)
-    plt.ylabel("Reward", fontsize=16)
-    plt.tick_params(axis='both', which='major',
-                    labelsize=14)
-    #plt.show()
-
-def plot_length(experiments):
-    plt.figure(2)
-    plt.subplot(122)
-    color_list=['blue','green','red','black','magenta']
-    label_list=[]
-    for i, (name, env, RL, data) in enumerate(experiments):
-        x_values=range(len(data['ep_length']))
-        label_list.append(RL.display_name)
-        y_values=data['ep_length']
-        plt.plot(x_values, y_values, c=color_list[i],label=label_list[-1])
-        plt.legend(label_list)
-    plt.title("Path Length", fontsize=16)
-    plt.xlabel("Episode", fontsize=16)
-    plt.ylabel("Length", fontsize=16)
-    plt.tick_params(axis='both', which='major',
-                    labelsize=14)
 
 
 def update(env, RL, data):
@@ -127,10 +113,10 @@ def update(env, RL, data):
         else:
             state = env.reset()
 
-        debug(2,'state(ep:{},t:{})={}'.format(episode, t, state))
+        logging.debug('state(ep:{},t:{})={}'.format(episode, t, state))
 
         if(SHOW_RENDER and (episode % RENDER_EVERY_NTH)==0):
-            print(f'Rendering Now Alg:{RL.display_name} Ep:{episode}/{EPISODES} at speed:{SIM_SPEED}')
+            logging.info(f'Rendering Now Alg:{RL.display_name} Ep:{episode}/{EPISODES} at speed:{SIM_SPEED}')
 
         # The main loop of the training on an episode
         # RL choose action based on state
@@ -144,8 +130,8 @@ def update(env, RL, data):
             # RL take action and get next state and reward
             state_, reward, done = env.step(action)
             global_reward[episode] += reward
-            debug(2,'state(ep:{},t:{})={}'.format(episode, t, state))
-            debug(2,'reward={:.3f} return_t={:.3f} Mean50={:.3f}'.format(reward, global_reward[episode],np.mean(global_reward[-50:])))
+            logging.debug('state(ep:{},t:{})={}'.format(episode, t, state))
+            logging.debug('reward={:.3f} return_t={:.3f} Mean50={:.3f}'.format(reward, global_reward[episode],np.mean(global_reward[-50:])))
 
             # RL learn from this transition
             # and determine next state and action
@@ -157,7 +143,7 @@ def update(env, RL, data):
             else:
                 t=t+1
 
-        debug(1, f"({RL.display_name}) Ep {episode} Length={t} Summed Reward={global_reward[episode]:.3}", printNow=(episode%PRINT_EVERY_NTH==0))
+        logging.info(f"({RL.display_name}) Ep {episode} Length={t} Summed Reward={global_reward[episode]:.3}")
 
         #save data about length of the episode
         ep_length[episode]=t
@@ -165,13 +151,12 @@ def update(env, RL, data):
         if(episode>=WINDOW):
             med_rew_window[episode-WINDOW] = np.median(global_reward[episode-WINDOW:episode])
             var_rew_window[episode-WINDOW] = np.var(global_reward[episode-WINDOW:episode])
-            debug(1,"    Med-{}={:.3f} Var-{}={:.3f}".format(
+            logging.debug("    Med-{}={:.3f} Var-{}={:.3f}".format(
                     WINDOW,
                     med_rew_window[episode-WINDOW],
                     WINDOW,
-                    var_rew_window[episode-WINDOW]),
-                printNow=(episode%PRINT_EVERY_NTH==0))
-    print('Algorithm {} completed'.format(RL.display_name))
+                    var_rew_window[episode-WINDOW]))
+    logging.info('Algorithm {} completed'.format(RL.display_name))
     env.destroy()
 
 if __name__ == "__main__":
@@ -203,6 +188,7 @@ if __name__ == "__main__":
     # First Demo Experiment 
     # Each combination of Algorithm and environment parameters constitutes an experiment that we will run for a number episodes, restarting the environment again each episode but keeping the value function learned so far.
     # You can add a new entry for each experiment in the experiments list and then they will all plot side-by-side at the end.
+
     experiments=[]
 
     # name1 = "WrongAlg on Task " + str(USE_TASK)
@@ -255,7 +241,7 @@ if __name__ == "__main__":
     print(f"Experiment Setup:\n - episodes:{EPISODES}\n - sim speed:{SIM_SPEED}\n") 
 
     for name, env, RL, data in experiments:
-        print("[{}] : {} : max-rew={:.3f} med-{}={:.3f} var-{}={:.3f} max-episode-len={}".format(
+        logging.info("[{}] : {} : max-rew={:.3f} med-{}={:.3f} var-{}={:.3f} max-episode-len={}".format(
             name, 
             RL.display_name, 
             np.max(data['global_reward']),
@@ -267,16 +253,18 @@ if __name__ == "__main__":
 
     if(DO_PLOT_REWARDS):
         #Simple plot of summed reward for each episode and algorithm, you can make more informative plots
-        plot_rewards(experiments)
+        plot_rewards(experiments, WINDOW, OUT_DIR)
 
     if(DO_PLOT_LENGTH):
         #Simple plot of summed reward for each episode and algorithm, you can make more informative plots
-        plot_length(experiments)
+        plot_length(experiments, OUT_DIR)
+    
 
-    if(DO_PLOT_REWARDS or DO_PLOT_LENGTH):
-        plt.figure(2)
-        plt.suptitle("Task " + str(USE_TASK), fontsize=20)
-        plt.show()
+    with open(OUT_DIR / "experiments.pkl", 'wb') as f:
+        exps = [(name, RL.display_name, data) for name, env, RL, data in experiments]
+        pickle.dump(exps, f)
+        logging.info(f"Experiments data saved to {OUT_DIR / f'experiments.pkl'}")
+
 
     # TODO: METRICS / MEASUREMENTS TO ADD:
         # runtime, 'bad' moves (pit, wall, edge), repeated visits to spaces? (on any single path)

@@ -1,5 +1,5 @@
+import logging
 import numpy as np
-import pandas as pd
 
 
 class rlalgorithm:
@@ -13,7 +13,7 @@ class rlalgorithm:
         self.Q={}
         self.actions=actions
         self.num_actions = len(actions)
-        print(f'Init new {self.display_name} Algorithm: eps={epsilon} alpha={alpha} gamma={gamma}')
+        logging.info(f'Init new {self.display_name} Algorithm: eps={epsilon} alpha={alpha} gamma={gamma}')
 
     # mostly same as sample code (except his epsilon check was weird?)
     def choose_action(self, observation, **kwargs):
@@ -42,19 +42,13 @@ class rlalgorithm:
             # update value function (note that all Q values for terminal states = 0)
             self.Q[s][a] += self.alpha * (r - self.Q[s][a])
         else:
-            # choose a_
             a_ = self.choose_action(s_)
-            # compute expectation
-            exp_sum = 0
-            a_max = self.actions[np.argmax(self.Q[s_])]
-            for a in self.actions:
-                if a == a_max:
-                    exp_sum += (1 - self.epsilon) * self.Q[s_][a]
-                else:
-                    # exp_sum += (self.epsilon / self.num_actions) * self.Q[s_][a]
-                    exp_sum += self.Q[s_][a] / (self.num_actions - 1)
-            # update value function
-            self.Q[s][a] += self.alpha * (r + (self.gamma * exp_sum) - self.Q[s][a])
+
+            p_a = np.ones(self.num_actions) * (1 / (self.num_actions - 1))
+            p_a[self.actions[np.argmax(self.Q[s_])]] = (1.0 - self.epsilon)
+            q_expected = self.Q[s_] @ p_a
+
+            self.Q[s][a] += self.alpha * (r + (self.gamma * q_expected) - self.Q[s][a])
 
         return s_, a_
 

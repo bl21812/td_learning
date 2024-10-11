@@ -3,6 +3,7 @@
 ##
 
 .direnv/
+**/runs/
 
 ##
 ## Python
