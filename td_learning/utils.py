@@ -90,6 +90,17 @@ def plot_experiments(experiments, key, title, ylab, mode, ax=None, window=None, 
             plt.savefig(file_name, format=IMG_EXT)
 
 
+def window_fn_type(name):
+    if name == "mean":
+        return np.mean
+    elif name == "var":
+        return np.var
+    elif name == "med":
+        return np.median
+    else:
+        raise ValueError(f"Invalid window function: {name}")
+
+
 def main():
     """
     Load experiments from a pickle file and generate plots.
@@ -105,6 +116,7 @@ def main():
     parser.add_argument("--window", type=int, default=250, help="Window size for moving average")
     parser.add_argument("--combine_plots", action="store_true", help="Plot things")
     parser.add_argument("--mode", type=str, default="both", choices=["both", "main", "window"], help="Plotting mode")
+    parser.add_argument("--window_fn", type=window_fn_type, default="med", choices=[np.mean, np.var, np.median], help="Function to apply to window")
     args = parser.parse_args()
     
     if args.output_dir:
@@ -116,20 +128,23 @@ def main():
     experiments = load_pickle(Path(args.input_dir))
 
     if args.combine_plots:
-        fig, (ax1, ax2, ax3, ax4) = plt.subplots(1, 4)
+        fig, (ax1, ax2, ax3, ax4) = plt.subplots(1, 4, figsize=(25, 5))
     else:
         ax1 = ax2 = ax3 = ax4 = None
 
-    plot_experiments(experiments, "global_reward", "Summed Rewards", "Reward",
-                    args.mode, ax1, window=args.window, out_dir=out_dir)
-    plot_experiments(experiments, 'ep_length', "Total Path Length", "Length",
-                    args.mode, ax2, window=args.window, out_dir=out_dir)
-    plot_experiments(experiments, "pitfall", "Number of Falls into Pits", "Number of Falls",
-                    "window", ax3, window=args.window, window_fn=np.mean, out_dir=out_dir)
-    plot_experiments(experiments, 'wallbump', "Number of Bumps into Walls", "Number of Bumps",
-                    args.mode, ax4, window=args.window, out_dir=out_dir)
+    plot_experiments(experiments, "global_reward", "(a) Summed Rewards", "Reward",
+                    args.mode, ax1, window=args.window, out_dir=out_dir, window_fn=args.window_fn)
+    plot_experiments(experiments, 'ep_length', "(b) Total Path Length", "Length",
+                    args.mode, ax2, window=args.window, out_dir=out_dir, window_fn=args.window_fn)
+    plot_experiments(experiments, "pitfall", "(c) Number of Falls into Pits", "Number of Falls",
+                    "window", ax3, window=args.window, out_dir=out_dir, window_fn=np.mean)
+                    # "window", ax3, window=args.window, out_dir=out_dir, window_fn=args.window_fn)
+    plot_experiments(experiments, 'wallbump', "(d) Number of Bumps into Walls", "Number of Bumps",
+                    args.mode, ax4, window=args.window, out_dir=out_dir, window_fn=args.window_fn)
+    
 
     if args.combine_plots:
+        fig.suptitle("Figure 1: Task 1 Experiment Results, $\epsilon=0.1$, $\\alpha=0.1$, $\gamma=0.9$, Average over Window Size=25")
         plt.tight_layout()
         plt.show()
 
