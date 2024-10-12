@@ -1,0 +1,14 @@
+Experiment Setup: Episodes: 1000
+Algorithm Hyperparameters: {'epsilon': 0.1, 'alpha': 0.1, 'gamma': 0.9}
+[SARSA on Task 1] : SARSA : max(reward)=-0.300 median(last-75-rewards)=-0.500 var(last-75-rewards)=1.333 max(episode-len)=607.0
+[Q-Learning on Task 1] : Q-Learning : max(reward)=-0.300 median(last-75-rewards)=-0.300 var(last-75-rewards)=1.559 max(episode-len)=511.0
+[Expected SARSA on Task 1] : Expected SARSA : max(reward)=-0.300 median(last-75-rewards)=-0.400 var(last-75-rewards)=0.040 max(episode-len)=614.0
+[Double Q-Learning on Task 1] : Double Q-Learning : max(reward)=-0.300 median(last-75-rewards)=-0.500 var(last-75-rewards)=0.051 max(episode-len)=884.0
+[SARSA on Task 2] : SARSA : max(reward)=0.300 median(last-75-rewards)=-0.100 var(last-75-rewards)=10.575 max(episode-len)=239.0
+[Q-Learning on Task 2] : Q-Learning : max(reward)=0.300 median(last-75-rewards)=0.100 var(last-75-rewards)=10.675 max(episode-len)=170.0
+[Expected SARSA on Task 2] : Expected SARSA : max(reward)=0.300 median(last-75-rewards)=0.300 var(last-75-rewards)=7.110 max(episode-len)=240.0
+[Double Q-Learning on Task 2] : Double Q-Learning : max(reward)=0.300 median(last-75-rewards)=0.300 var(last-75-rewards)=4.490 max(episode-len)=207.0
+[SARSA on Task 3] : SARSA : max(reward)=-0.400 median(last-75-rewards)=-1.200 var(last-75-rewards)=0.066 max(episode-len)=365.0
+[Q-Learning on Task 3] : Q-Learning : max(reward)=-0.200 median(last-75-rewards)=-0.400 var(last-75-rewards)=19.593 max(episode-len)=208.0
+[Expected SARSA on Task 3] : Expected SARSA : max(reward)=-0.200 median(last-75-rewards)=-0.900 var(last-75-rewards)=5.500 max(episode-len)=233.0
+[Double Q-Learning on Task 3] : Double Q-Learning : max(reward)=-1.400 median(last-75-rewards)=-490.100 var(last-75-rewards)=6299258.456 max(episode-len)=3695460.0
