@@ -6,7 +6,6 @@ logger = logging.getLogger('ECE750')
 
 class rlalgorithm:
     
-    # TODO: what should default values of alpha and gamma be ??
     def __init__(self, actions, epsilon=0.1, alpha=0.1, gamma=0.9, *args, **kwargs):
         self.epsilon = epsilon
         self.alpha = alpha
@@ -47,7 +46,6 @@ class rlalgorithm:
             q_update = self.Q2
             q_static = self.Q1
 
-        # TODO: im not sure how s_ can be a string, i thought it was coords ...
         if s_ == 'terminal':
             logger.warning("Terminal state reached")
             # value functions for terminal states should always remain 0

@@ -234,8 +234,5 @@ def main():
     export_pickle(experiments, OUT_DIR)
     logger.info(f"Experiments data saved to {OUT_DIR}.")
 
-    # TODO: METRICS / MEASUREMENTS TO ADD:
-        # runtime, 'bad' moves (pit, wall, edge), repeated visits to spaces? (on any single path)
-
 if __name__ == "__main__":
     main()

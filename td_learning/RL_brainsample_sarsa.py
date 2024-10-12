@@ -6,7 +6,6 @@ logger = logging.getLogger('ECE750')
 
 class rlalgorithm:
 
-    # TODO: what should default values of alpha and gamma be ??
     def __init__(self, actions, epsilon=0.1, alpha=0.1, gamma=0.9, *args, **kwargs):
         self.epsilon = epsilon
         self.alpha = alpha
@@ -37,7 +36,6 @@ class rlalgorithm:
         self.check_state_exist(s_)
         self.check_state_exist(s)
 
-        # TODO: im not sure how s_ can be a string, i thought it was coords ...
         if s_ == 'terminal':
             logger.warning("Terminal state reached")
             # we can skip choosing an action - since the episode will terminate
